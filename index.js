@@ -10,6 +10,7 @@ app.get("/", (req, res) => {
   res.send("Hello from Express Server");
 });
 
+// Adding Data
 app.post("/create", async (req, res) => {
   let data = new Product(req.body);
   let result = await data.save();
@@ -17,16 +18,19 @@ app.post("/create", async (req, res) => {
   res.send(result);
 });
 
+// Getting Data
 app.get("/list", async (req, res) => {
   let data = await Product.find();
   res.send(data);
 });
 
+//Deleting By Using Id
 app.delete("/delete/:_id", async (req, res) => {
   let data = await Product.deleteOne(req.params);
   res.send(data);
 });
 
+// Updating By Using Id
 app.put("/update/:_id", async (req, res) => {
   let data = await Product.updateOne(req.params, { $set: req.body });
   res.send(data);
