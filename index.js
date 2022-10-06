@@ -22,6 +22,16 @@ app.get("/list", async (req, res) => {
   res.send(data);
 });
 
+app.delete("/delete/:_id", async (req, res) => {
+  let data = await Product.deleteOne(req.params);
+  res.send(data);
+});
+
+app.put("/update/:_id", async (req, res) => {
+  let data = await Product.updateOne(req.params, { $set: req.body });
+  res.send(data);
+});
+
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
 });
