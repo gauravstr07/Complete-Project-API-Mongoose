@@ -1,10 +1,23 @@
 const express = require("express");
+const multer = require("multer");
 require("./src/config");
+
 const Product = require("./src/product");
 
 const app = express();
 app.use(express.json());
 const port = 5000;
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "uploads");
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.filename + "-" + Date.now() + ".pdf");
+    },
+  }),
+}).single("user_file");
 
 app.get("/", (req, res) => {
   res.send("Hello from Express Server");
@@ -37,19 +50,20 @@ app.put("/update/:_id", async (req, res) => {
 });
 
 // Searching in DB
-app.get("/search/:key", async(req, res) => {
+app.get("/search/:key", async (req, res) => {
+  let data = await Product.find({
+    $or: [
+      { name: { $regex: req.params.key } },
+      { brand: { $regex: req.params.key } },
+      { category: { $regex: req.params.key } },
+    ],
+  });
+  res.send(data);
+});
 
-    let data = await Product.find(
-        {
-            "$or":[
-                {"name": {$regex:req.params.key}},
-                {"brand": {$regex:req.params.key}},
-                {"category": {$regex:req.params.key}}
-            ]
-        }
-    );
-    res.send(data)
-})
+app.post("/upload", upload, (req, res) => {
+  res.send("File Upload");
+});
 
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
